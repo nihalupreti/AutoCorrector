@@ -1,6 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from transformers import T5ForConditionalGeneration, T5Tokenizer
+from textblob import TextBlob
+import nltk
+from nltk.corpus import words
+
+# Ensure nltk data is available
+nltk.download('words')
 
 MODEL_DIR = "E:/AutoCorrection/final_model"
 model = T5ForConditionalGeneration.from_pretrained(MODEL_DIR)
@@ -8,6 +14,9 @@ tokenizer = T5Tokenizer.from_pretrained(MODEL_DIR)
 
 app = Flask(__name__)
 CORS(app)
+
+# Word list from nltk corpus (valid words)
+valid_words = set(words.words())
 
 
 @app.route("/", methods=["GET"])
@@ -24,9 +33,10 @@ def correct():
         inputs = tokenizer(text, return_tensors="pt")
         outputs = model.generate(inputs.input_ids)
         decoded_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        print(decoded_output)
-        # Compare original & corrected text
-        incorrect_words = find_incorrect_words(text, decoded_output)
+        print(f"Corrected text: {decoded_output}")
+
+        # Find incorrect words
+        incorrect_words = find_incorrect_words(decoded_output)
 
         return jsonify({"corrected_text": decoded_output, "incorrect_words": incorrect_words})
 
@@ -34,17 +44,23 @@ def correct():
         return jsonify({"error": str(e)})
 
 
-def find_incorrect_words(original, corrected):
-    """Find words that changed between original and corrected text."""
-    original_words = original.split()
-    corrected_words = corrected.split()
-
+def find_incorrect_words(suggested_sen):
+    corrected_words = suggested_sen.split()
     incorrect = []
-    for i, word in enumerate(original_words):
-        if i >= len(corrected_words) or word != corrected_words[i]:
-            incorrect.append(word)
+
+    for word in corrected_words:
+        if word.lower() not in valid_words:  # If the word is not in the dictionary
+            corrected_word = correct_spelling(word)
+            print(correct_spelling(word))
+            if corrected_word != word:
+                incorrect.append(corrected_word)
 
     return incorrect
+
+
+def correct_spelling(word):
+    blob = TextBlob(word)
+    return str(blob.correct())
 
 
 if __name__ == '__main__':
