@@ -1,0 +1,77 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+  margin: 0;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.text-area-container {
+  width: 600px;
+  position: relative;
+}
+
+#textEditor {
+  width: 100%;
+  height: 200px;
+  padding: 15px;
+  font-size: 18px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  resize: none;
+  background-color: white;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  position: relative;
+}
+
+#textEditor:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+#tooltip {
+  position: absolute;
+  display: none;
+  z-index: 1000;
+}
+
+.tooltiptext {
+  background-color: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.error {
+  color: red;
+  cursor: pointer;
+}
+
+.text-area-container {
+  width: 600px;
+  position: relative;
+}
